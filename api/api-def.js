@@ -13,7 +13,9 @@ fs.readdir('./api/' + modulesDir, function(err, files) {
 		throw err;
 	}
 	
-	for(file in files) {
+	console.log("Found " + files.length + " potential modules");
+	
+	for(file in files) {		
 		if(!files.hasOwnProperty(file)) {
 			continue;
 		}
@@ -21,15 +23,22 @@ fs.readdir('./api/' + modulesDir, function(err, files) {
 		console.log("Getting module from " + files[file]);
 		
 		/* Instantiate the module */
-		m = getModule(files[file]);		
-		
-		/* Register the exports */
-		m.registerExports( function (funcname, funcobj) {
-			console.log('Module ' + modulesDir + '/' + files[file] + ': registering ' + funcname);
-			exports[funcname] = funcobj;
-		});		
-		
-		/* Remember the module */
-		modules.push(module);		
+		try
+		{
+			m = getModule(files[file]);		
+			
+			/* Register the exports */
+			m.registerExports( function (funcname, funcobj) {
+				console.log(' - Module ' + modulesDir + '/' + files[file] + ': registering ' + funcname);
+				exports[funcname] = funcobj;
+			});		
+			
+			/* Remember the module */
+			modules.push(module);		
+		}
+		catch(e)
+		{
+			console.log(" - ERROR loading from " + modulesDir + '/' + files[file] + ": " + e);
+		}
 	}
 });
