@@ -7,7 +7,7 @@ function getModule(moduleFileName) {
 }	
 
 fs.readdir('./api/' + modulesDir, function(err, files) {
-	var file, module;
+	var file, m;
 	
 	if(err) {
 		throw err;
@@ -21,10 +21,13 @@ fs.readdir('./api/' + modulesDir, function(err, files) {
 		console.log("Getting module from " + files[file]);
 		
 		/* Instantiate the module */
-		module = getModule(files[file]);		
+		m = getModule(files[file]);		
 		
 		/* Register the exports */
-		module.registerExports(exports);		
+		m.registerExports( function (funcname, funcobj) {
+			console.log('Module ' + modulesDir + '/' + files[file] + ': registering ' + funcname);
+			exports[funcname] = funcobj;
+		});		
 		
 		/* Remember the module */
 		modules.push(module);		
